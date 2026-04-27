@@ -17,8 +17,22 @@ import {
 } from "react";
 
 type WorkflowId = "client-call" | "company-research" | "finance-report" | "plan-day";
-type SimpleWorkflowId = Exclude<WorkflowId, "client-call">;
-type WindowId = "transcript" | "response" | "next" | "primary";
+type WindowId =
+  | "transcript"
+  | "response"
+  | "next"
+  | "snapshot"
+  | "radar"
+  | "notes"
+  | "risk"
+  | "metrics"
+  | "assumptions"
+  | "memo"
+  | "sources"
+  | "timeline"
+  | "priority"
+  | "focus"
+  | "prep";
 type WindowRect = {
   x: number;
   y: number;
@@ -77,49 +91,22 @@ const workspaceRects: Record<WorkflowId, Partial<Record<WindowId, WindowRect>>> 
     next: { x: 740, y: 74, width: 340, height: 360 },
   },
   "company-research": {
-    primary: { x: 0, y: 82, width: 520, height: 320 },
-    next: { x: 560, y: 82, width: 520, height: 320 },
+    snapshot: { x: 0, y: 104, width: 330, height: 340 },
+    radar: { x: 374, y: 104, width: 332, height: 340 },
+    notes: { x: 750, y: 104, width: 330, height: 160 },
+    risk: { x: 750, y: 284, width: 330, height: 160 },
   },
   "finance-report": {
-    primary: { x: 0, y: 82, width: 520, height: 320 },
-    next: { x: 560, y: 82, width: 520, height: 320 },
+    metrics: { x: 0, y: 104, width: 324, height: 340 },
+    assumptions: { x: 354, y: 104, width: 286, height: 340 },
+    memo: { x: 670, y: 104, width: 410, height: 218 },
+    sources: { x: 670, y: 342, width: 410, height: 102 },
   },
   "plan-day": {
-    primary: { x: 0, y: 82, width: 520, height: 320 },
-    next: { x: 560, y: 82, width: 520, height: 320 },
-  },
-};
-
-const simpleWorkspaceContent: Record<
-  SimpleWorkflowId,
-  {
-    title: string;
-    lead: string;
-    primary: string;
-    items: string[];
-    icon: ReactNode;
-  }
-> = {
-  "company-research": {
-    title: "Research Brief",
-    lead: "LayerOS gathered a clean company snapshot from public filings, customer signals, and competitor notes.",
-    primary: "Top signal: finance teams are consolidating workflow tools before renewal season.",
-    items: ["Summarize industry headwinds", "Pull competitor positioning", "Draft questions for discovery"],
-    icon: <GeneratedIcon name="company-research" />,
-  },
-  "finance-report": {
-    title: "Finance Report",
-    lead: "LayerOS prepared the model outline, memo sections, and source checklist for a fast first draft.",
-    primary: "Focus: compare implementation cost against expected time saved per team.",
-    items: ["Build ROI snapshot", "Create assumptions tab", "Write executive summary"],
-    icon: <GeneratedIcon name="finance-report" />,
-  },
-  "plan-day": {
-    title: "Daily Plan",
-    lead: "LayerOS sorted meetings, deadlines, and deep-work windows into one simple operating view.",
-    primary: "Best next move: finish the client prep before the afternoon check-in.",
-    items: ["Protect 90 minutes for analysis", "Move low-priority admin", "Prep call notes by 1:30 PM"],
-    icon: <GeneratedIcon name="plan-day" />,
+    timeline: { x: 0, y: 104, width: 458, height: 340 },
+    priority: { x: 488, y: 104, width: 278, height: 340 },
+    focus: { x: 796, y: 104, width: 284, height: 154 },
+    prep: { x: 796, y: 278, width: 284, height: 166 },
   },
 };
 
@@ -383,7 +370,15 @@ function Workspace({ workflow }: { workflow: Workflow }) {
     return <ClientCallWorkspace key={workflow.id} />;
   }
 
-  return <SimpleWorkspace key={workflow.id} workflow={workflow} />;
+  if (workflow.id === "company-research") {
+    return <CompanyResearchWorkspace key={workflow.id} workflow={workflow} />;
+  }
+
+  if (workflow.id === "finance-report") {
+    return <FinanceReportWorkspace key={workflow.id} workflow={workflow} />;
+  }
+
+  return <PlanDayWorkspace key={workflow.id} workflow={workflow} />;
 }
 
 function ClientCallWorkspace() {
@@ -471,48 +466,301 @@ function ClientCallWorkspace() {
   );
 }
 
-function SimpleWorkspace({ workflow }: { workflow: Workflow }) {
-  const workspaceContent = simpleWorkspaceContent[workflow.id as SimpleWorkflowId];
-  const rects = workspaceRects[workflow.id];
+function CompanyResearchWorkspace({ workflow }: { workflow: Workflow }) {
+  const rects = workspaceRects["company-research"];
 
   return (
-    <div className="simple-workspace workspace-canvas">
-      <div className="workspace-heading liquid-surface">
-        <span>{workflow.icon}</span>
-        <strong>{workflow.label}</strong>
-        <small>{workflow.description}</small>
-      </div>
+    <div className="research-workspace workspace-canvas">
+      <WorkspaceHeading workflow={workflow} />
 
-      <DraggableWindow rect={rects.primary!}>
+      <DraggableWindow rect={rects.snapshot!}>
         {(dragHandleProps) => (
           <Panel
-            className="simple-primary-panel"
-            icon={workspaceContent.icon}
-            title={workspaceContent.title}
+            className="snapshot-panel"
+            icon={<GeneratedIcon name="company-research" />}
+            title="Company Snapshot"
             dragHandleProps={dragHandleProps}
           >
-            <p className="muted-copy">{workspaceContent.lead}</p>
-            <div className="response-card compact">
-              <p>{workspaceContent.primary}</p>
+            <div className="snapshot-score">
+              <strong>84</strong>
+              <span>Fit Score</span>
+            </div>
+            <p className="muted-copy">
+              Mid-market finance team. Tool consolidation, renewal pressure, and CFO visibility
+              are all trending up.
+            </p>
+            <div className="research-table">
+              <span>Buying trigger</span>
+              <strong>Renewal in 41 days</strong>
+              <span>Workflow pain</span>
+              <strong>Manual handoffs</strong>
+              <span>Best opener</span>
+              <strong>Time saved proof</strong>
             </div>
           </Panel>
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.next!}>
+      <DraggableWindow rect={rects.radar!}>
         {(dragHandleProps) => (
           <Panel
-            className="simple-side-panel"
+            className="radar-panel"
             icon={<GeneratedIcon name="next-steps" />}
-            title="LayerOS Next Steps"
+            title="Signals Radar"
             dragHandleProps={dragHandleProps}
           >
-            {workspaceContent.items.map((item) => (
-              <ActionItem key={item} icon={<GeneratedIcon name="next-steps" />} label={item} />
-            ))}
+            <div className="signal-radar" aria-hidden="true">
+              <span className="radar-ring ring-one" />
+              <span className="radar-ring ring-two" />
+              <span className="radar-ring ring-three" />
+              <span className="radar-sweep" />
+              <span className="signal-node node-one">Renewal</span>
+              <span className="signal-node node-two">CFO</span>
+              <span className="signal-node node-three">Ops</span>
+              <span className="signal-node node-four">Risk</span>
+            </div>
+            <p className="radar-caption">Highest-ranked signal: renewal window plus cost control.</p>
           </Panel>
         )}
       </DraggableWindow>
+
+      <DraggableWindow rect={rects.notes!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="competitor-panel"
+            icon={<GeneratedIcon name="call-notes" />}
+            title="Competitor Notes"
+            dragHandleProps={dragHandleProps}
+          >
+            <CompactList items={["Legacy CRM add-on", "Manual reporting team", "No AI policy layer"]} />
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.risk!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="risk-panel"
+            icon={<GeneratedIcon name="risk-flag" />}
+            title="Risk Flags"
+            dragHandleProps={dragHandleProps}
+          >
+            <CompactList items={["Procurement review", "Data access concern", "Pilot scope unclear"]} />
+          </Panel>
+        )}
+      </DraggableWindow>
+    </div>
+  );
+}
+
+function FinanceReportWorkspace({ workflow }: { workflow: Workflow }) {
+  const rects = workspaceRects["finance-report"];
+
+  return (
+    <div className="finance-workspace workspace-canvas">
+      <WorkspaceHeading workflow={workflow} />
+
+      <DraggableWindow rect={rects.metrics!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="roi-panel"
+            icon={<GeneratedIcon name="finance-report" />}
+            title="ROI Snapshot"
+            dragHandleProps={dragHandleProps}
+          >
+            <div className="metric-grid">
+              <MetricTile label="Time saved" value="11.4h" />
+              <MetricTile label="Payback" value="4.8mo" />
+              <MetricTile label="Risk cut" value="23%" />
+              <MetricTile label="Teams" value="6" />
+            </div>
+            <p className="muted-copy">
+              LayerOS built the first model from notes, tool usage, and assumptions.
+            </p>
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.assumptions!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="assumptions-panel"
+            icon={<GeneratedIcon name="source-sheet" />}
+            title="Assumptions"
+            dragHandleProps={dragHandleProps}
+          >
+            <AssumptionRow label="Users" value="240" />
+            <AssumptionRow label="Hourly cost" value="$68" />
+            <AssumptionRow label="Adoption" value="62%" />
+            <AssumptionRow label="Setup" value="3 weeks" />
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.memo!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="memo-panel"
+            icon={<GeneratedIcon name="save-note" />}
+            title="Memo Draft"
+            dragHandleProps={dragHandleProps}
+          >
+            <div className="memo-sheet">
+              <strong>Executive summary</strong>
+              <p>
+                Pilot with finance ops first. The strongest case is reclaiming review time and
+                reducing approval lag before quarter close.
+              </p>
+            </div>
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.sources!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="source-panel"
+            icon={<GeneratedIcon name="next-steps" />}
+            title="Source Checklist"
+            dragHandleProps={dragHandleProps}
+          >
+            <div className="source-checks">
+              <span>CRM export</span>
+              <span>Call notes</span>
+              <span>Pricing model</span>
+            </div>
+          </Panel>
+        )}
+      </DraggableWindow>
+    </div>
+  );
+}
+
+function PlanDayWorkspace({ workflow }: { workflow: Workflow }) {
+  const rects = workspaceRects["plan-day"];
+
+  return (
+    <div className="day-workspace workspace-canvas">
+      <WorkspaceHeading workflow={workflow} />
+
+      <DraggableWindow rect={rects.timeline!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="timeline-panel"
+            icon={<GeneratedIcon name="plan-day" />}
+            title="Timeline"
+            dragHandleProps={dragHandleProps}
+          >
+            <div className="day-timeline">
+              <TimelineItem time="9:00" label="Inbox triage" />
+              <TimelineItem time="10:30" label="Client prep" isFocus />
+              <TimelineItem time="1:30" label="Team check-in" />
+              <TimelineItem time="3:00" label="Finance report" isFocus />
+            </div>
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.priority!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="priority-panel"
+            icon={<GeneratedIcon name="next-steps" />}
+            title="Priority Stack"
+            dragHandleProps={dragHandleProps}
+          >
+            <div className="priority-stack">
+              <span>Client call prep</span>
+              <span>Finance assumptions</span>
+              <span>Move admin work</span>
+            </div>
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.focus!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="focus-panel"
+            icon={<GeneratedIcon name="live-transcript" />}
+            title="Focus Block"
+            dragHandleProps={dragHandleProps}
+          >
+            <div className="focus-orbit">
+              <strong>90 min</strong>
+              <span>Protected analysis window</span>
+            </div>
+          </Panel>
+        )}
+      </DraggableWindow>
+
+      <DraggableWindow rect={rects.prep!}>
+        {(dragHandleProps) => (
+          <Panel
+            className="meeting-panel"
+            icon={<GeneratedIcon name="call-notes" />}
+            title="Meeting Prep"
+            dragHandleProps={dragHandleProps}
+          >
+            <CompactList items={["Open notes", "Draft questions", "Send agenda"]} />
+          </Panel>
+        )}
+      </DraggableWindow>
+    </div>
+  );
+}
+
+function WorkspaceHeading({ workflow }: { workflow: Workflow }) {
+  return (
+    <div className="workspace-heading liquid-surface">
+      <span>{workflow.icon}</span>
+      <strong>{workflow.label}</strong>
+      <small>{workflow.description}</small>
+    </div>
+  );
+}
+
+function CompactList({ items }: { items: string[] }) {
+  return (
+    <div className="compact-list">
+      {items.map((item) => (
+        <span key={item}>{item}</span>
+      ))}
+    </div>
+  );
+}
+
+function MetricTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="metric-tile">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function AssumptionRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="assumption-row">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function TimelineItem({
+  time,
+  label,
+  isFocus = false,
+}: {
+  time: string;
+  label: string;
+  isFocus?: boolean;
+}) {
+  return (
+    <div className={`timeline-item ${isFocus ? "is-focus" : ""}`}>
+      <time>{time}</time>
+      <span>{label}</span>
     </div>
   );
 }
@@ -536,6 +784,11 @@ function DraggableWindow({
 
   function startDrag(event: ReactPointerEvent<HTMLElement>) {
     if (event.button !== 0) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    if (target.closest("button, input, textarea, select, a, [data-no-drag]")) {
       return;
     }
 
@@ -586,13 +839,11 @@ function DraggableWindow({
       onPointerMove={moveDrag}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
+      onPointerDown={startDrag}
+      onDoubleClick={() => setPosition({ x: rect.x, y: rect.y })}
     >
       {children({
         className: "window-drag-handle",
-        onPointerDown: startDrag,
-        onDoubleClick: () => setPosition({ x: rect.x, y: rect.y }),
-        role: "button",
-        tabIndex: 0,
         "aria-label": "Drag module",
       })}
     </div>
