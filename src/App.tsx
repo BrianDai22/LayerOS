@@ -108,8 +108,8 @@ const workspaceRects: Record<WorkflowId, Partial<Record<WindowId, WindowRect>>> 
   "finance-report": {
     metrics: { x: 0, y: 104, width: 324, height: 340 },
     assumptions: { x: 354, y: 104, width: 286, height: 340 },
-    memo: { x: 670, y: 104, width: 410, height: 218 },
-    sources: { x: 670, y: 342, width: 410, height: 102 },
+    memo: { x: 670, y: 104, width: 410, height: 268 },
+    sources: { x: 670, y: 392, width: 410, height: 112 },
   },
   "plan-day": {
     timeline: { x: 0, y: 104, width: 458, height: 340 },
@@ -191,10 +191,10 @@ function App() {
               <motion.div
                 key={selectedWorkflow.id}
                 className="workspace-motion-wrap"
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18, scale: shouldReduceMotion ? 1 : 0.99 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: shouldReduceMotion ? 0 : 12, scale: shouldReduceMotion ? 1 : 0.99 }}
-                transition={{ duration: shouldReduceMotion ? 0.01 : 0.42, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: shouldReduceMotion ? 0.01 : 0.16, ease: [0.22, 1, 0.36, 1] }}
               >
                 <WorkspaceExit workflow={selectedWorkflow} onReset={resetWorkspace} />
                 <Workspace workflow={selectedWorkflow} />
@@ -648,7 +648,7 @@ function ClientCallWorkspace() {
         <span>00:04:28</span>
       </div>
 
-      <DraggableWindow rect={rects.transcript!}>
+      <DraggableWindow rect={rects.transcript!} index={0}>
         {(dragHandleProps) => (
           <Panel
             className="transcript-panel"
@@ -677,7 +677,7 @@ function ClientCallWorkspace() {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.response!}>
+      <DraggableWindow rect={rects.response!} index={1}>
         {(dragHandleProps) => (
           <Panel
             className="suggestion-panel"
@@ -703,7 +703,7 @@ function ClientCallWorkspace() {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.next!}>
+      <DraggableWindow rect={rects.next!} index={2}>
         {(dragHandleProps) => (
           <Panel
             className="next-panel"
@@ -728,7 +728,7 @@ function CompanyResearchWorkspace({ workflow }: { workflow: Workflow }) {
     <div className="research-workspace workspace-canvas">
       <WorkspaceHeading workflow={workflow} />
 
-      <DraggableWindow rect={rects.snapshot!}>
+      <DraggableWindow rect={rects.snapshot!} index={0}>
         {(dragHandleProps) => (
           <Panel
             className="snapshot-panel"
@@ -756,7 +756,7 @@ function CompanyResearchWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.radar!}>
+      <DraggableWindow rect={rects.radar!} index={1}>
         {(dragHandleProps) => (
           <Panel
             className="radar-panel"
@@ -779,7 +779,7 @@ function CompanyResearchWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.notes!}>
+      <DraggableWindow rect={rects.notes!} index={2}>
         {(dragHandleProps) => (
           <Panel
             className="competitor-panel"
@@ -792,7 +792,7 @@ function CompanyResearchWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.risk!}>
+      <DraggableWindow rect={rects.risk!} index={3}>
         {(dragHandleProps) => (
           <Panel
             className="risk-panel"
@@ -815,7 +815,7 @@ function FinanceReportWorkspace({ workflow }: { workflow: Workflow }) {
     <div className="finance-workspace workspace-canvas">
       <WorkspaceHeading workflow={workflow} />
 
-      <DraggableWindow rect={rects.metrics!}>
+      <DraggableWindow rect={rects.metrics!} index={0}>
         {(dragHandleProps) => (
           <Panel
             className="roi-panel"
@@ -836,7 +836,7 @@ function FinanceReportWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.assumptions!}>
+      <DraggableWindow rect={rects.assumptions!} index={1}>
         {(dragHandleProps) => (
           <Panel
             className="assumptions-panel"
@@ -852,7 +852,7 @@ function FinanceReportWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.memo!}>
+      <DraggableWindow rect={rects.memo!} index={2}>
         {(dragHandleProps) => (
           <Panel
             className="memo-panel"
@@ -871,7 +871,7 @@ function FinanceReportWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.sources!}>
+      <DraggableWindow rect={rects.sources!} index={3}>
         {(dragHandleProps) => (
           <Panel
             className="source-panel"
@@ -898,7 +898,7 @@ function PlanDayWorkspace({ workflow }: { workflow: Workflow }) {
     <div className="day-workspace workspace-canvas">
       <WorkspaceHeading workflow={workflow} />
 
-      <DraggableWindow rect={rects.timeline!}>
+      <DraggableWindow rect={rects.timeline!} index={0}>
         {(dragHandleProps) => (
           <Panel
             className="timeline-panel"
@@ -916,7 +916,7 @@ function PlanDayWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.priority!}>
+      <DraggableWindow rect={rects.priority!} index={1}>
         {(dragHandleProps) => (
           <Panel
             className="priority-panel"
@@ -940,7 +940,7 @@ function PlanDayWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.focus!}>
+      <DraggableWindow rect={rects.focus!} index={2}>
         {(dragHandleProps) => (
           <Panel
             className="focus-panel"
@@ -956,7 +956,7 @@ function PlanDayWorkspace({ workflow }: { workflow: Workflow }) {
         )}
       </DraggableWindow>
 
-      <DraggableWindow rect={rects.prep!}>
+      <DraggableWindow rect={rects.prep!} index={3}>
         {(dragHandleProps) => (
           <Panel
             className="meeting-panel"
@@ -1091,9 +1091,11 @@ function TimelineItem({
 
 function DraggableWindow({
   rect,
+  index = 0,
   children,
 }: {
   rect: WindowRect;
+  index?: number;
   children: (dragHandleProps: DragHandleProps) => ReactNode;
 }) {
   const [zIndex, setZIndex] = useState(1);
@@ -1120,6 +1122,7 @@ function DraggableWindow({
 
   const maxX = Math.max(0, window.innerWidth - rect.width - 56);
   const maxY = Math.max(0, window.innerHeight - rect.height - 168);
+  const entranceDelay = shouldReduceMotion ? 0 : 0.03 + index * 0.045;
 
   return (
     <motion.div
@@ -1151,14 +1154,22 @@ function DraggableWindow({
         animate(x, 0, { duration: shouldReduceMotion ? 0.01 : 0.34, ease: [0.16, 1, 0.3, 1] });
         animate(y, 0, { duration: shouldReduceMotion ? 0.01 : 0.34, ease: [0.16, 1, 0.3, 1] });
       }}
-      initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.985 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: shouldReduceMotion ? 0.01 : 0.42, ease: [0.16, 1, 0.3, 1] }}
     >
-      {children({
-        className: "window-drag-handle",
-        "aria-label": "Drag module",
-      })}
+      <motion.div
+        className="canvas-window-shell"
+        initial={{ opacity: shouldReduceMotion ? 1 : 0.35, y: shouldReduceMotion ? 0 : 10, scale: shouldReduceMotion ? 1 : 0.996 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{
+          duration: shouldReduceMotion ? 0.01 : 0.38,
+          delay: entranceDelay,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+      >
+        {children({
+          className: "window-drag-handle",
+          "aria-label": "Drag module",
+        })}
+      </motion.div>
     </motion.div>
   );
 }
